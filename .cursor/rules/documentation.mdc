@@ -1,0 +1,40 @@
+---
+description: Keep documentation in sync with code changes
+alwaysApply: true
+---
+
+# Documentation Sync
+
+After any significant code change, update relevant documentation:
+
+## What triggers a docs update
+
+- New feature or module added
+- API endpoint added/changed/removed
+- Data model changed
+- Configuration options changed
+- Dependencies added/removed
+- Architecture decisions made
+
+## Files to check
+
+| Change Type | Update These |
+|-------------|--------------|
+| New feature | `README.md` (Features section), `docs/planning.md` |
+| API change | `README.md` (if public-facing), `docs/api.md` (when it exists) |
+| Architecture | `docs/planning.md`, `BLUEPRINT.md` |
+| Dependencies | `backend/requirements.txt`, `frontend/package.json` |
+| Scope change | `README.md` (Current Scope section) |
+
+## How to update
+
+1. Mark completed items in roadmap checklists with `[x]`
+2. Add new planned items as `[ ]`
+3. Update tech stack tables if dependencies change
+4. Keep `BLUEPRINT.md` current with actual implementation state
+
+## Don't update docs for
+
+- Minor refactors that don't change behavior
+- Bug fixes (unless they reveal a limitation worth documenting)
+- Code style changes

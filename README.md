@@ -18,15 +18,15 @@ Crisis analysts currently rely on manual monitoring, keyword alerts, and institu
 
 ## What ReliefWatch Does
 
-ReliefWatch aggregates real-time crisis data from social media, news, and open satellite sources to provide early-warning intelligence for humanitarian response.
+ReliefWatch aggregates real-time crisis data from social media, news, and satellite sources to provide early-warning intelligence for humanitarian response.
 
 Specifically, it:
 
-- Ingests posts from social media platforms (X/Twitter, Reddit), news APIs (GDELT, NewsAPI), and open satellite imagery
+- Ingests posts from social media platforms (X/Twitter, Reddit), news APIs (GDELT, NewsAPI), and satellite imagery
 - Uses NLP to detect emerging crises and classify need categories: **food insecurity**, **medical emergencies**, **shelter/displacement**, **water/sanitation**
 - Extracts geographic references and maps them to administrative boundaries
 - Assigns severity scores and tracks signal frequency over time
-- Provides a public dashboard for monitoring and prioritization
+- Provides a dashboard for monitoring and prioritization
 - Outputs structured alerts with source links, timestamps, and confidence indicators
 
 ReliefWatch does not replace verified reporting. It surfaces *candidates* for further investigation—signals that may warrant analyst attention before formal confirmation arrives.
@@ -62,7 +62,7 @@ ReliefWatch does not replace verified reporting. It surfaces *candidates* for fu
                               ▼
 ┌─────────────────────────────────────────────────────────────────┐
 │                         OUTPUT                                  │
-│  Dashboard  •  Public API  •  Alerts  •  JSON export            │
+│  Dashboard  •  API  •  Alerts  •  JSON export                   │
 └─────────────────────────────────────────────────────────────────┘
 ```
 
@@ -76,7 +76,7 @@ All outputs include direct links to source material. Nothing is synthesized with
 - [ ] News aggregation and summarization
 - [ ] Geographic crisis mapping
 - [ ] Severity scoring algorithm
-- [ ] Public dashboard and API
+- [ ] Dashboard and API
 - [ ] Alert system for emerging crises
 - [ ] Historical crisis data archive
 
@@ -101,9 +101,9 @@ ReliefWatch starts narrow and expands based on validated performance:
 
 | Dimension | V1 Coverage |
 |-----------|-------------|
-| **Regions** | Single region (configurable—default: East Africa) |
-| **Languages** | English (additional languages planned) |
-| **Crisis types** | Food insecurity, displacement, disease outbreaks |
+| **Region** | India |
+| **Languages** | English (Hindi planned) |
+| **Crisis types** | Floods, cyclones, disease outbreaks, displacement |
 | **Data sources** | X/Twitter, Reddit, GDELT, NewsAPI |
 | **Update frequency** | Near real-time ingestion, configurable aggregation |
 
@@ -114,31 +114,31 @@ Starting small is intentional. Scope creep is the main risk for projects like th
 ## Example Output
 
 ```
-ALERT #2847
-Generated: 2026-02-21 14:32 UTC
+ALERT #1042
+Generated: 2026-07-15 08:45 UTC
 
-CRISIS TYPE:    Food insecurity
-LOCATION:       North Darfur, Sudan (Admin Level 1)
-COORDINATES:    15.7833° N, 32.5500° E (centroid)
-SEVERITY:       High (0.78)
-CONFIDENCE:     Medium (0.67)
+CRISIS TYPE:    Flood
+LOCATION:       Assam, India (Admin Level 1)
+COORDINATES:    26.2006° N, 92.9376° E (centroid)
+SEVERITY:       High (0.82)
+CONFIDENCE:     Medium (0.71)
 
 SIGNAL SUMMARY:
-- 23 social media posts in past 6 hours referencing food shortages
-- 4 news articles mentioning market closures in El Fasher
-- Spike detected: 340% above 7-day baseline for this region
+- 47 social media posts in past 6 hours referencing flooding
+- 8 news articles mentioning displacement in Barpeta district
+- Spike detected: 520% above 7-day baseline for this region
 
 TOP SOURCES:
-1. [X/Twitter] @SudanTribune - "Reports of empty markets in El Fasher..."
-   Posted: 2026-02-21 12:15 UTC
+1. [X/Twitter] @AssamTribune - "Heavy flooding reported in Barpeta, thousands displaced..."
+   Posted: 2026-07-15 06:22 UTC
    Link: https://twitter.com/...
 
-2. [News] Reuters - "Food supplies disrupted in North Darfur amid conflict"
-   Published: 2026-02-21 09:00 UTC
-   Link: https://reuters.com/...
+2. [News] NDTV - "Assam floods: Over 50,000 affected as Brahmaputra rises"
+   Published: 2026-07-15 05:30 UTC
+   Link: https://ndtv.com/...
 
-3. [GDELT] Event detected - Food security, Sudan
-   Logged: 2026-02-21 11:47 UTC
+3. [GDELT] Event detected - Flood, India
+   Logged: 2026-07-15 07:15 UTC
 
 LIMITATIONS:
 - No ground verification available
@@ -146,8 +146,8 @@ LIMITATIONS:
 - Source accounts not independently verified
 
 RECOMMENDED ACTION:
-- Cross-reference with OCHA Sudan updates
-- Monitor WFP food security bulletins
+- Cross-reference with NDMA updates
+- Monitor IMD flood bulletins
 - Flag for analyst review
 ```
 
@@ -232,7 +232,7 @@ Development priorities are driven by operational needs and user feedback.
 
 **This tool is designed for:**
 
-- **Crisis analysts** tracking emerging situations
+- **Crisis analysts** tracking emerging situations in India
 - **OSINT researchers** investigating conflict and displacement patterns
 - **Journalists** seeking early leads on underreported emergencies
 - **NGO operations teams** planning resource deployment
