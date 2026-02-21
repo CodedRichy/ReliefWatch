@@ -1,12 +1,151 @@
 # ReliefWatch — Blueprint
 
-> Internal reference for current architecture, decisions, and implementation state.
+> Internal reference for architecture, decisions, and implementation state.
 
 ---
 
-## Overview
+## What This Is
 
-Real-time humanitarian early-warning system for India. Monitors social media, news, and satellite sources to detect emerging crises (floods, cyclones, disease outbreaks, displacement) before official reports.
+ReliefWatch is a **public humanitarian early-warning system**.
+
+It continuously scans open, public signals (social media + news) during disasters and answers one core question:
+
+> "What kind of help is being urgently talked about, where, and how recently?"
+
+**It does not:**
+- Verify ground truth
+- Coordinate aid
+- Replace official reports
+
+**It surfaces signals earlier than formal systems, so humans can decide faster.**
+
+Think of it as:
+- Google Trends, but for humanitarian needs
+- OSINT, but focused on food, shelter, medical aid, displacement
+
+---
+
+## What the System Does
+
+### 1. Data Ingestion
+- Pulls recent posts/articles using disaster-specific keywords
+- Light geo-bias (place names, regions, hashtags)
+- Time-bounded (last X hours)
+
+### 2. Signal Classification
+Each post/article is tagged into:
+- Food
+- Medical
+- Shelter
+- Displacement
+- Infrastructure
+- Unknown / noise
+
+No black-box magic. Keep it interpretable.
+
+### 3. Signal Aggregation
+The system:
+- Groups similar mentions
+- Counts volume + velocity (spikes)
+- Weights by recency and cross-source agreement
+
+### 4. Output
+Produces a ranked list of needs:
+- What is needed
+- Where
+- How recent
+- How many sources
+
+This output is publicly visible.
+
+---
+
+## What the User Sees
+
+A public page showing:
+
+**Latest Alerts**
+> "Food shortage — Aluva (↑ spike in last 6h)"
+
+**Simple Map**
+- Dots marking locations
+
+**Transparency**
+- Source links
+- Timestamps
+- Counts
+
+**Disclaimer**
+> "Signals, not verified ground truth"
+
+No login. No interaction friction. Designed to be scannable in under 60 seconds.
+
+---
+
+## Audience
+
+### Primary (Build for these)
+
+**1. Crisis Analysts / OSINT Community**
+- Track conflicts and disasters
+- Care about early signals, not dashboards
+- Will respect clean methodology
+
+**2. Journalists**
+- Need fast situational awareness
+- Love quotable tools
+- Value transparency over accuracy claims
+
+*These people amplify you.*
+
+### Secondary (Validation, not growth)
+
+**3. NGOs (Small–Mid)**
+- Local disaster response orgs
+- Use outputs informally
+- Won't pay yet, but might reference you
+
+### Tertiary (Silent but critical)
+
+**4. Recruiters / Engineers / Seniors**
+- Asking: "Can this person design a real system under constraints?"
+- ReliefWatch answers yes.
+
+---
+
+## Why No Monetization (Yet)
+
+Monetization right now would:
+- Distort design decisions
+- Force NGO sales
+- Slow you down
+- Make you overpromise
+
+**You don't have leverage yet.**
+
+Current currency is:
+- Visibility
+- Credibility
+- Public proof of skill
+
+Trying to monetize early is how projects die quietly.
+
+### When Monetization Becomes Legit
+
+Only after:
+- People cite or share it
+- Someone asks "can we get alerts for X?"
+- An org uses it during a real event
+
+Then monetization becomes pull-based, not push-based.
+
+Possible future paths:
+- Custom regional deployments
+- Private alert feeds
+- Crisis-specific reports
+- Grants / fellowships
+
+**None of this is V1.**
 
 ---
 
@@ -14,16 +153,16 @@ Real-time humanitarian early-warning system for India. Monitors social media, ne
 
 | Component | Status | Notes |
 |-----------|--------|-------|
-| Backend structure | Scaffolded | FastAPI app skeleton in `/backend` |
-| Database | Not started | PostgreSQL + TimescaleDB planned |
+| Backend structure | Scaffolded | FastAPI skeleton in `/backend` |
+| Database | Not started | PostgreSQL planned |
 | Ingestion: Twitter | Not started | — |
 | Ingestion: Reddit | Not started | — |
 | Ingestion: GDELT | Not started | — |
 | Ingestion: NewsAPI | Not started | — |
-| NLP pipeline | Not started | spaCy + transformers |
-| Severity scoring | Not started | — |
-| Frontend | Not started | Next.js + Leaflet planned |
-| Deployment | Not started | Vercel (frontend) + Railway (backend) |
+| NLP pipeline | Not started | Classification + location extraction |
+| Signal aggregation | Not started | — |
+| Frontend | Not started | Next.js + Leaflet |
+| Deployment | Not started | Vercel (FE) + Railway (BE) |
 
 ---
 
@@ -32,36 +171,36 @@ Real-time humanitarian early-warning system for India. Monitors social media, ne
 ```
 ┌─────────────────────────────────────────────────────────────┐
 │                      NEXT.JS FRONTEND                       │
-│  Full-screen map  •  Alert sidebar  •  Filters  •  Dark UI  │
+│  Map  •  Alert list  •  Filters  •  Source links  •  Dark   │
 └─────────────────────────────────────────────────────────────┘
                               │
                               ▼
 ┌─────────────────────────────────────────────────────────────┐
 │                      FASTAPI BACKEND                        │
-│  /events  •  /alerts  •  /stats  •  WebSocket (future)      │
+│  /alerts  •  /events  •  /stats                             │
 └─────────────────────────────────────────────────────────────┘
                               │
                               ▼
 ┌─────────────────────────────────────────────────────────────┐
-│                     POSTGRESQL + TIMESCALE                  │
-│  events  •  sources  •  locations  •  time-series trends    │
+│                       POSTGRESQL                            │
+│  events  •  sources  •  locations                           │
 └─────────────────────────────────────────────────────────────┘
                               │
                               ▼
 ┌─────────────────────────────────────────────────────────────┐
-│                  BACKGROUND WORKERS                         │
-│  Twitter ingest  •  News ingest  •  NLP pipeline  •  Scoring │
+│                   BACKGROUND WORKERS                        │
+│  Ingest (Twitter, Reddit, News)  •  Classify  •  Aggregate  │
 └─────────────────────────────────────────────────────────────┘
 ```
 
 ---
 
-## Scope
+## Scope (V1)
 
-| Dimension | V1 |
-|-----------|----|
+| Dimension | Coverage |
+|-----------|----------|
 | **Region** | India |
-| **Languages** | English (Hindi planned) |
+| **Languages** | English (Hindi later) |
 | **Crisis types** | Floods, cyclones, disease outbreaks, displacement |
 | **Sources** | X/Twitter, Reddit, GDELT, NewsAPI |
 
@@ -69,121 +208,101 @@ Real-time humanitarian early-warning system for India. Monitors social media, ne
 
 ## Data Models
 
-### CrisisEvent
+### Signal (raw input)
 
 ```python
-class CrisisEvent:
+class Signal:
     id: str
-    crisis_type: CrisisType  # flood, cyclone, disease, displacement, etc.
-    location: Location       # name, state, lat/lon
-    severity: Severity       # low, medium, high, critical
-    confidence: float        # 0.0 - 1.0
-    signal_count: int        # number of sources
-    sources: list[Source]    # linked source records
-    first_detected: datetime
-    last_updated: datetime
-    summary: str
-```
-
-### Source
-
-```python
-class Source:
-    id: str
-    platform: str           # twitter, reddit, news, gdelt
+    platform: str           # twitter, reddit, news
     url: str
+    text: str
     author: str | None
     posted_at: datetime
-    text: str
-    event_id: str           # FK to CrisisEvent
+    location_raw: str | None  # extracted from text
+```
+
+### Event (aggregated output)
+
+```python
+class Event:
+    id: str
+    need_type: NeedType     # food, medical, shelter, displacement, infrastructure
+    location: Location
+    signal_count: int
+    velocity: float         # spike indicator
+    first_seen: datetime
+    last_seen: datetime
+    sources: list[Signal]
 ```
 
 ### Location
 
 ```python
 class Location:
-    name: str               # "Chennai", "Bihar"
-    state: str
-    country: str = "India"
-    admin_level: int        # 1 = state, 2 = district, 3 = city
+    name: str               # "Chennai", "Barpeta"
+    state: str              # "Tamil Nadu", "Assam"
     latitude: float | None
     longitude: float | None
+```
+
+### NeedType
+
+```python
+class NeedType(Enum):
+    FOOD = "food"
+    MEDICAL = "medical"
+    SHELTER = "shelter"
+    DISPLACEMENT = "displacement"
+    INFRASTRUCTURE = "infrastructure"
+    UNKNOWN = "unknown"
 ```
 
 ---
 
 ## API Endpoints
 
-### Events
-
 | Method | Endpoint | Description |
 |--------|----------|-------------|
-| GET | `/events` | List events with filters (type, severity, state) |
-| GET | `/events/{id}` | Get single event with sources |
-| GET | `/events/stats` | Aggregate stats |
-
-### Alerts
-
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| GET | `/alerts` | Recent high-severity events |
-| GET | `/alerts/recent?hours=24` | Alerts from last N hours |
-
-### Health
-
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| GET | `/` | Service status |
+| GET | `/alerts` | Ranked list of current needs |
+| GET | `/alerts?state=assam` | Filter by state |
+| GET | `/alerts?type=flood` | Filter by need type |
+| GET | `/events/{id}` | Single event with sources |
 | GET | `/health` | Health check |
 
 ---
 
-## Ingestion Sources
+## Frontend
 
-### Twitter/X
+**Single page. No routing complexity.**
 
-- **Method:** Filtered stream or search API
-- **Keywords:** `flood india`, `cyclone`, `drought`, `disease outbreak`, state names + crisis terms
-- **Rate limits:** Respect API tiers
-- **Storage:** Raw tweets → processed events
+| Section | Content |
+|---------|---------|
+| Header | "ReliefWatch" + last updated timestamp |
+| Map | Leaflet, dots for locations, click for details |
+| Alert List | Ranked needs, expandable for sources |
+| Filters | State, need type, time range |
+| Footer | Disclaimer, methodology link, source attribution |
 
-### Reddit
-
-- **Subreddits:** r/india, r/IndiaSpeaks, state-specific subs
-- **Method:** PRAW polling
-- **Filter:** Crisis-related keywords in title/body
-
-### GDELT
-
-- **Method:** GDELT 2.0 API
-- **Filter:** India + event codes for disasters, conflicts
-- **Frequency:** Hourly pulls
-
-### NewsAPI
-
-- **Method:** Everything endpoint
-- **Keywords:** Same as Twitter
-- **Sources:** Indian news outlets priority
+**Design:**
+- Dark theme
+- Scannable in 60 seconds
+- No login
+- Mobile-friendly
 
 ---
 
-## NLP Pipeline
+## Build Order
 
-1. **Language detection** — Filter to English (Hindi later)
-2. **Crisis classification** — Multi-label: flood, cyclone, disease, displacement, other
-3. **Location extraction** — NER for Indian places, normalize to state/district
-4. **Severity signals** — Keywords, urgency language, casualty mentions
-5. **Deduplication** — Cluster similar reports about same event
-
----
-
-## Frontend Pages
-
-| Route | Description |
-|-------|-------------|
-| `/` | Full-screen map with event markers, sidebar with alerts |
-| `/event/{id}` | Event detail with sources, timeline |
-| `/about` | What this is, limitations, methodology |
+1. [x] Project structure and documentation
+2. [ ] Database schema
+3. [ ] Twitter ingestion (keywords: flood, cyclone, disaster + India regions)
+4. [ ] Basic classification (keyword-based first, ML later)
+5. [ ] Location extraction (regex + gazetteer)
+6. [ ] Aggregation logic (group, count, spike detection)
+7. [ ] API endpoints
+8. [ ] Frontend: map + alert list
+9. [ ] Add Reddit, GDELT, NewsAPI
+10. [ ] Polish and deploy
 
 ---
 
@@ -191,28 +310,12 @@ class Location:
 
 | Layer | Technology |
 |-------|------------|
-| Frontend | Next.js 14, React, Tailwind, Leaflet |
+| Frontend | Next.js, React, Tailwind, Leaflet |
 | Backend | Python 3.11+, FastAPI, Pydantic |
-| Database | PostgreSQL 15, TimescaleDB |
-| NLP | spaCy, Hugging Face transformers |
+| Database | PostgreSQL |
+| NLP | Keyword matching (V1), spaCy (V2) |
 | Ingestion | Tweepy, PRAW, httpx |
-| Task queue | Celery + Redis (future) |
-| Deployment | Vercel (FE), Railway (BE), Supabase (DB option) |
-
----
-
-## Build Order
-
-1. [x] Project structure and documentation
-2. [ ] Database schema + migrations
-3. [ ] Twitter ingestion worker
-4. [ ] Basic NLP pipeline (classification + location)
-5. [ ] API endpoints serving real data
-6. [ ] Frontend: map + alert list
-7. [ ] Reddit + GDELT + NewsAPI ingestion
-8. [ ] Severity scoring algorithm
-9. [ ] Polish: dark theme, animations, mobile
-10. [ ] Deploy
+| Deployment | Vercel (FE), Railway (BE) |
 
 ---
 
@@ -220,62 +323,21 @@ class Location:
 
 | Date | Decision | Rationale |
 |------|----------|-----------|
-| 2026-02-21 | Focus on India, not East Africa | Familiarity with geography, language, verification |
+| 2026-02-21 | India focus | Familiarity, verification ability |
 | 2026-02-21 | Proprietary license | Not open source |
-| 2026-02-21 | Start with ingestion, not frontend | Data pipeline is the hard part; UI without data is useless |
+| 2026-02-21 | No monetization in V1 | Build credibility first |
+| 2026-02-21 | Keyword classification first | Interpretable, ship fast, ML later |
+| 2026-02-21 | Single-page frontend | Scannable, no friction |
 
 ---
 
-## Open Questions
+## What This Project Says About You
 
-- Twitter API tier needed? (Basic vs Pro)
-- Host database on Railway or Supabase?
-- Hindi language support timeline?
-
----
-
-## Monetization
-
-### Target Audiences (in order of priority)
-
-| Audience | Why | Revenue Potential |
-|----------|-----|-------------------|
-| **Journalists / OSINT researchers** | Will share, give visibility | Low (free tier) |
-| **NGOs / Disaster response** | Active users, slow sales | ₹50k–₹2L/year |
-| **Insurance companies** | Real money, need accuracy proof | ₹5L–₹50L/year |
-| **Government / NDMA** | Large contracts, slow procurement | Variable |
-| **Academia** | Credibility, citations | Low |
-
-### Revenue Model
-
-**Phase 1 — Free launch**
-- Public dashboard, no login required
-- Goal: users, credibility, press coverage
-
-**Phase 2 — Freemium**
-- Free: dashboard, basic filters
-- Paid: API access, custom alerts, CSV/JSON export, historical data
-
-**Phase 3 — Enterprise**
-- Data licensing for insurance/reinsurance
-- Custom deployments for government
-- SLAs and accuracy guarantees
-
-### Pricing Ideas (validate later)
-
-| Tier | Price | Includes |
-|------|-------|----------|
-| Free | ₹0 | Dashboard, 7-day history |
-| Pro | ₹2,000/mo | API (10k calls), alerts, 1-year history |
-| Enterprise | Custom | Unlimited API, SLA, custom filters, raw data |
-
-### Grant Opportunities
-
-- Google.org (humanitarian tech)
-- Skoll Foundation
-- Omidyar Network India
-- USAID Development Innovation Ventures
-- Bill & Melinda Gates Foundation (health crises)
+Without saying a word, ReliefWatch signals:
+- You understand systems, not just models
+- You care about real-world constraints
+- You can ship public, usable tools
+- You think beyond coursework
 
 ---
 

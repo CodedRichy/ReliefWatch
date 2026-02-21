@@ -1,250 +1,155 @@
 # ReliefWatch
 
-**Early-warning signals for humanitarian needs, extracted from open sources before official reports exist.**
+**Early-warning signals for humanitarian needs, surfaced from public sources before official reports exist.**
 
 ---
 
-## Problem
+## What This Is
 
-Humanitarian crises unfold faster than institutions can document them.
+ReliefWatch is a public humanitarian early-warning system.
 
-Formal situation reports from UN agencies, governments, and NGOs typically lag 24–72 hours behind real events. In rapidly evolving emergencies—displacement surges, disease outbreaks, supply chain collapses—this delay costs lives. By the time a report is published, needs have already shifted.
+It continuously scans open signals—social media and news—during disasters and answers one question:
 
-Meanwhile, fragments of ground truth surface continuously in real time: local news, social media posts, community radio transcriptions, government bulletins. This information exists but remains scattered, unstructured, and inaccessible to responders who need it most.
+> "What kind of help is being urgently talked about, where, and how recently?"
 
-Crisis analysts currently rely on manual monitoring, keyword alerts, and institutional sitreps. This workflow is reactive by design. It waits for confirmation rather than identifying emerging patterns.
+It does **not**:
+- Verify ground truth
+- Coordinate aid
+- Replace official reports
 
----
-
-## What ReliefWatch Does
-
-ReliefWatch aggregates real-time crisis data from social media, news, and satellite sources to provide early-warning intelligence for humanitarian response.
-
-Specifically, it:
-
-- Ingests posts from social media platforms (X/Twitter, Reddit), news APIs (GDELT, NewsAPI), and satellite imagery
-- Uses NLP to detect emerging crises and classify need categories: **food insecurity**, **medical emergencies**, **shelter/displacement**, **water/sanitation**
-- Extracts geographic references and maps them to administrative boundaries
-- Assigns severity scores and tracks signal frequency over time
-- Provides a dashboard for monitoring and prioritization
-- Outputs structured alerts with source links, timestamps, and confidence indicators
-
-ReliefWatch does not replace verified reporting. It surfaces *candidates* for further investigation—signals that may warrant analyst attention before formal confirmation arrives.
+It surfaces signals earlier than formal systems, so humans can decide faster.
 
 ---
 
 ## How It Works
 
 ```
-┌─────────────────────────────────────────────────────────────────┐
-│                        DATA SOURCES                             │
-│  X/Twitter  •  Reddit  •  GDELT  •  NewsAPI  •  Sentinel        │
-└─────────────────────────────────────────────────────────────────┘
+┌──────────────────────────────────────────────────────────────┐
+│                     DATA INGESTION                           │
+│  Twitter  •  Reddit  •  GDELT  •  News APIs                  │
+│  Keywords: flood, cyclone, displacement, medical emergency   │
+└──────────────────────────────────────────────────────────────┘
                               │
                               ▼
-┌─────────────────────────────────────────────────────────────────┐
-│                      INGESTION LAYER                            │
-│  Rate-limited collection  •  Deduplication  •  Language detect  │
-└─────────────────────────────────────────────────────────────────┘
+┌──────────────────────────────────────────────────────────────┐
+│                   SIGNAL CLASSIFICATION                      │
+│  Food  •  Medical  •  Shelter  •  Displacement  •  Infra     │
+└──────────────────────────────────────────────────────────────┘
                               │
                               ▼
-┌─────────────────────────────────────────────────────────────────┐
-│                    NLP PIPELINE                                 │
-│  Crisis detection (spaCy, transformers)  •  Location extraction │
-└─────────────────────────────────────────────────────────────────┘
+┌──────────────────────────────────────────────────────────────┐
+│                   SIGNAL AGGREGATION                         │
+│  Group similar mentions  •  Count volume  •  Detect spikes   │
+└──────────────────────────────────────────────────────────────┘
                               │
                               ▼
-┌─────────────────────────────────────────────────────────────────┐
-│                     SIGNAL AGGREGATION                          │
-│  Clustering  •  Severity scoring  •  Geographic mapping         │
-└─────────────────────────────────────────────────────────────────┘
-                              │
-                              ▼
-┌─────────────────────────────────────────────────────────────────┐
-│                         OUTPUT                                  │
-│  Dashboard  •  API  •  Alerts  •  JSON export                   │
-└─────────────────────────────────────────────────────────────────┘
+┌──────────────────────────────────────────────────────────────┐
+│                        OUTPUT                                │
+│  Ranked needs  •  Locations  •  Timestamps  •  Source links  │
+└──────────────────────────────────────────────────────────────┘
 ```
 
-All outputs include direct links to source material. Nothing is synthesized without attribution.
-
 ---
 
-## Features
+## What You See
 
-- [ ] Real-time social media crisis detection
-- [ ] News aggregation and summarization
-- [ ] Geographic crisis mapping
-- [ ] Severity scoring algorithm
-- [ ] Dashboard and API
-- [ ] Alert system for emerging crises
-- [ ] Historical crisis data archive
+A public page showing:
 
----
+**Latest Alerts**
+> "Food shortage — Barpeta, Assam (↑ spike in last 6h)"
 
-## Tech Stack
+**Map**
+- Dots marking locations with active signals
 
-| Layer | Technology |
-|-------|------------|
-| **Backend** | Python (FastAPI) |
-| **NLP** | spaCy, Hugging Face Transformers |
-| **Data Sources** | X/Twitter API, Reddit API, GDELT, NewsAPI, Sentinel (satellite) |
-| **Frontend** | React / Next.js |
-| **Database** | PostgreSQL / TimescaleDB |
-| **Mapping** | Leaflet / Mapbox |
+**Transparency**
+- Source links for every signal
+- Timestamps
+- Signal counts
 
----
+**Disclaimer**
+> "These are signals, not verified ground truth."
 
-## Current Scope
-
-ReliefWatch starts narrow and expands based on validated performance:
-
-| Dimension | V1 Coverage |
-|-----------|-------------|
-| **Region** | India |
-| **Languages** | English (Hindi planned) |
-| **Crisis types** | Floods, cyclones, disease outbreaks, displacement |
-| **Data sources** | X/Twitter, Reddit, GDELT, NewsAPI |
-| **Update frequency** | Near real-time ingestion, configurable aggregation |
-
-Starting small is intentional. Scope creep is the main risk for projects like this. Expansion proceeds only where output quality can be verified.
+No login. No friction. Scannable in under 60 seconds.
 
 ---
 
 ## Example Output
 
 ```
-ALERT #1042
-Generated: 2026-07-15 08:45 UTC
+ALERT: Food shortage
+LOCATION: Barpeta, Assam
+LAST 6 HOURS: 47 mentions (↑ 520% vs baseline)
+NEED TYPE: Food
 
-CRISIS TYPE:    Flood
-LOCATION:       Assam, India (Admin Level 1)
-COORDINATES:    26.2006° N, 92.9376° E (centroid)
-SEVERITY:       High (0.82)
-CONFIDENCE:     Medium (0.71)
+SOURCES:
+1. @AssamTribune - "Heavy flooding, markets closed in Barpeta..."
+   twitter.com/... • 2 hours ago
 
-SIGNAL SUMMARY:
-- 47 social media posts in past 6 hours referencing flooding
-- 8 news articles mentioning displacement in Barpeta district
-- Spike detected: 520% above 7-day baseline for this region
+2. NDTV - "Assam floods: 50,000 affected as Brahmaputra rises"
+   ndtv.com/... • 4 hours ago
 
-TOP SOURCES:
-1. [X/Twitter] @AssamTribune - "Heavy flooding reported in Barpeta, thousands displaced..."
-   Posted: 2026-07-15 06:22 UTC
-   Link: https://twitter.com/...
-
-2. [News] NDTV - "Assam floods: Over 50,000 affected as Brahmaputra rises"
-   Published: 2026-07-15 05:30 UTC
-   Link: https://ndtv.com/...
-
-3. [GDELT] Event detected - Flood, India
-   Logged: 2026-07-15 07:15 UTC
-
-LIMITATIONS:
-- No ground verification available
-- Location extracted from text, not geotagged
-- Source accounts not independently verified
-
-RECOMMENDED ACTION:
-- Cross-reference with NDMA updates
-- Monitor IMD flood bulletins
-- Flag for analyst review
+3. r/india - "Any updates on relief camps in Barpeta district?"
+   reddit.com/... • 5 hours ago
 ```
 
 ---
 
-## Why This Matters
+## Current Scope
 
-Crisis response operates on the edge of available information. Decisions about resource pre-positioning, evacuation routes, and supply chain activation often cannot wait for confirmed reports.
+| Dimension | V1 Coverage |
+|-----------|-------------|
+| **Region** | India |
+| **Languages** | English (Hindi planned) |
+| **Crisis types** | Floods, cyclones, disease outbreaks, displacement |
+| **Sources** | X/Twitter, Reddit, GDELT, NewsAPI |
 
-Early signals—even imperfect ones—allow responders to:
+Starting narrow is intentional. Expansion follows validation.
 
-- Begin logistical planning before official confirmation
-- Identify geographic hotspots that may be underreported
-- Detect emerging needs that fall outside standard monitoring categories
-- Track how conditions change between formal reporting cycles
+---
 
-A verified sitrep arriving 48 hours after an event is valuable for documentation. A probabilistic signal arriving 6 hours before that sitrep is valuable for *action*.
+## Who This Is For
 
-ReliefWatch does not claim to replace institutional reporting. It claims to fill the gap before institutional reporting begins.
+**Crisis analysts and OSINT researchers**
+- Early signals before official reports
+- Transparent methodology
+
+**Journalists**
+- Fast situational awareness
+- Quotable, shareable outputs
+
+**NGOs and disaster responders**
+- Informal reference during active events
+- No vendor lock-in
+
+---
+
+## Who This Is NOT For
+
+- General public seeking news (use news sites)
+- Automated decision-making (requires human judgment)
+- Legal documentation (signals are unverified)
+- Tactical response (latency too high)
 
 ---
 
 ## Known Limitations
 
-**Data quality:**
-- Social media posts may contain rumors, misinformation, or deliberate disinformation
-- Geographic extraction relies on text mentions; coordinates are estimated centroids, not precise locations
-- Language models make errors in classification and extraction, particularly for informal Arabic dialects
+**Signals, not facts**
+- Social media contains rumors and misinformation
+- No ground verification
+- Confidence reflects volume and recency, not truth
 
-**Coverage gaps:**
-- Internet blackouts and communication disruptions create blind spots precisely when crises escalate
-- Populations without internet access are structurally invisible to this system
-- Signals skew toward urban areas and literate populations
+**Coverage gaps**
+- Internet blackouts create blind spots
+- Populations without internet access are invisible
+- Urban/English bias
 
-**Verification:**
-- ReliefWatch outputs are *unverified signals*, not confirmed facts
-- Confidence scores reflect statistical patterns, not ground truth
-- No automated system can replace human judgment or field verification
+**Technical constraints**
+- Platform API changes may disrupt access
+- Location extraction relies on text mentions
+- Classification is keyword-based (V1)
 
-**Ethical considerations:**
-- Publicizing location data during active conflict may endanger affected populations
-- Source accounts may face retaliation if their posts are amplified
-- Aggregated data could be misused by malicious actors
-
-**Operational constraints:**
-- Platform API changes may disrupt data access without warning
-- Processing delays during high-volume events
-- Model drift requires ongoing calibration
-
-Users should treat ReliefWatch outputs as *leads for investigation*, not as reportable facts.
-
----
-
-## Roadmap
-
-**Week 1 — Foundation:**
-- [ ] Repository structure and development environment
-- [ ] X/Twitter API integration for keyword monitoring
-- [ ] Basic NLP pipeline for crisis keyword detection
-- [ ] Simple severity scoring algorithm
-- [ ] Database schema for events
-
-**Week 2 — MVP:**
-- [ ] News API integration (GDELT, NewsAPI)
-- [ ] Basic frontend dashboard
-- [ ] Geographic mapping (Leaflet/Mapbox)
-- [ ] Deploy MVP (Vercel/Railway)
-- [ ] Documentation and launch
-
-**Post-MVP:**
-- [ ] Historical crisis data archive
-- [ ] Alert system for emerging crises
-- [ ] Source credibility scoring
-- [ ] Additional language support
-- [ ] Satellite imagery integration (Sentinel)
-
-Development priorities are driven by operational needs and user feedback.
-
----
-
-## Who Should Use This
-
-**This tool is designed for:**
-
-- **Crisis analysts** tracking emerging situations in India
-- **OSINT researchers** investigating conflict and displacement patterns
-- **Journalists** seeking early leads on underreported emergencies
-- **NGO operations teams** planning resource deployment
-- **Academic researchers** studying humanitarian early warning systems
-
-**This tool is NOT designed for:**
-
-- General public seeking news updates (use established news sources)
-- Automated decision-making without human review
-- Legal or evidentiary documentation (outputs are unverified)
-- Real-time tactical response (latency too high, verification insufficient)
-- Monitoring outside current geographic scope (outputs will be unreliable)
+Users should treat outputs as leads for investigation, not confirmed reports.
 
 ---
 
@@ -257,13 +162,7 @@ Development priorities are driven by operational needs and user feedback.
 ## Project Status
 
 **Status:** Active Development  
-**Version:** Pre-release (MVP in progress)
-
----
-
-## Contact
-
-For licensing inquiries or partnership discussions, contact the author directly.
+**Version:** Pre-release
 
 ---
 
