@@ -224,7 +224,7 @@ Users should treat ReliefWatch outputs as *leads for investigation*, not as repo
 - [ ] Additional language support
 - [ ] Satellite imagery integration (Sentinel)
 
-Development priorities are driven by feedback from users. Ship fast, iterate publicly, document everything.
+Development priorities are driven by operational needs and user feedback.
 
 ---
 
@@ -248,22 +248,9 @@ Development priorities are driven by feedback from users. Ship fast, iterate pub
 
 ---
 
-## Contributing
-
-ReliefWatch is open source. Contributions are welcome in:
-
-- Language model evaluation for under-resourced languages
-- Geographic normalization for additional regions
-- Integration with humanitarian data standards
-- Documentation and translation
-
-See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
-
----
-
 ## License
 
-MIT License. See [LICENSE](LICENSE) for details.
+**Proprietary.** This repository is visible for reference only. No license is granted to use, copy, modify, or distribute this software. See [LICENSE](LICENSE) for details.
 
 ---
 
@@ -272,8 +259,12 @@ MIT License. See [LICENSE](LICENSE) for details.
 **Status:** Active Development  
 **Version:** Pre-release (MVP in progress)
 
-This project is under active development. Core functionality is being built. Contributions and feedback welcome.
+---
+
+## Contact
+
+For licensing inquiries or partnership discussions, contact the author directly.
 
 ---
 
-<sub>Last updated: February 2026</sub>
+<sub>Copyright 2025 Rishi Praseeth Krishnan. All rights reserved.</sub>
