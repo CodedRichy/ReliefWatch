@@ -1,169 +1,197 @@
 # ReliefWatch
 
-**Early-warning signals for humanitarian needs, surfaced from public sources before official reports exist.**
+## Overview
+
+ReliefWatch is a public humanitarian early-warning system designed to scan open-source signals—social media and news—during disasters. Its primary goal is to answer the core question: **"What kind of help is being urgently talked about, where, and how recently?"**
+
+By surfacing signals earlier than formal reporting systems, ReliefWatch provides crisis analysts and first responders with high-velocity situational awareness, helping them identify urgent needs for food, medical aid, shelter, and displacement alerts before official data is compiled.
 
 ---
 
-## What This Is
+## Features
 
-ReliefWatch is a public humanitarian early-warning system.
-
-It continuously scans open signals—social media and news—during disasters and answers one question:
-
-> "What kind of help is being urgently talked about, where, and how recently?"
-
-It does **not**:
-- Verify ground truth
-- Coordinate aid
-- Replace official reports
-
-It surfaces signals earlier than formal systems, so humans can decide faster.
+*   **Multimodal Data Ingestion**: Continuous scanning of X (Twitter), Reddit, GDELT, and global news feeds using disaster-specific keywords.
+*   **Rapid Signal Classification**: Automated tagging of signals into categories such as Food, Medical, Shelter, Displacement, and Infrastructure.
+*   **Geospatial Extraction**: Identifying specific locations (cities, districts, states) from unstructured text to map needs accurately.
+*   **Signal Aggregation**: Grouping similar mentions and calculating volume and velocity to detect emergent spikes in humanitarian needs.
+*   **Public Accountability**: A transparent platform showing source links, timestamps, and cross-source agreement for every alert.
 
 ---
 
-## How It Works
+## Architecture
+
+ReliefWatch follows a modern decoupled architecture:
+
+*   **Frontend**: A Next.js application providing a scannable dashboard with interactive maps (Leaflet) and ranked alert lists.
+*   **API Engine**: A high-performance FastAPI backend that processes signals and serves crisis data via structured endpoints.
+*   **Ingestion Workers**: Background workers that interact with various social and news APIs to pull real-time data.
+*   **Data Store**: A PostgreSQL database managing the lifecycle of signals, aggregated events, and geographical metadata.
+
+### Data Flow
+1.  **Ingestion**: Scrapers pull raw text from public platforms based on keyword triggers.
+2.  **Processing**: NLP modules classify the "Need Type" and extract location coordinates.
+3.  **Aggregation**: Individual signals are clustered into "Events" based on proximity and timing.
+4.  **Delivery**: The API serves these events to the frontend for public visualization.
+
+---
+
+## Tech Stack
+
+*   **Backend**: Python 3.11, FastAPI, Pydantic, SQLAlchemy, Alembic
+*   **Frontend**: Next.js (React), Tailwind CSS, Leaflet.js
+*   **NLP/ML**: spaCy (Entity Recognition), Transformers (Classification), PyTorch
+*   **Data APIs**: Tweepy (X/Twitter), PRAW (Reddit), GDELT, NewsAPI
+*   **Database**: PostgreSQL
+*   **Deployment**: Vercel (Frontend), Railway (Backend)
+
+---
+
+## Repository Structure
 
 ```
-┌──────────────────────────────────────────────────────────────┐
-│                     DATA INGESTION                           │
-│  Twitter  •  Reddit  •  GDELT  •  News APIs                  │
-│  Keywords: flood, cyclone, displacement, medical emergency   │
-└──────────────────────────────────────────────────────────────┘
-                              │
-                              ▼
-┌──────────────────────────────────────────────────────────────┐
-│                   SIGNAL CLASSIFICATION                      │
-│  Food  •  Medical  •  Shelter  •  Displacement  •  Infra     │
-└──────────────────────────────────────────────────────────────┘
-                              │
-                              ▼
-┌──────────────────────────────────────────────────────────────┐
-│                   SIGNAL AGGREGATION                         │
-│  Group similar mentions  •  Count volume  •  Detect spikes   │
-└──────────────────────────────────────────────────────────────┘
-                              │
-                              ▼
-┌──────────────────────────────────────────────────────────────┐
-│                        OUTPUT                                │
-│  Ranked needs  •  Locations  •  Timestamps  •  Source links  │
-└──────────────────────────────────────────────────────────────┘
-```
-
----
-
-## What You See
-
-A public page showing:
-
-**Latest Alerts**
-> "Food shortage — Barpeta, Assam (↑ spike in last 6h)"
-
-**Map**
-- Dots marking locations with active signals
-
-**Transparency**
-- Source links for every signal
-- Timestamps
-- Signal counts
-
-**Disclaimer**
-> "These are signals, not verified ground truth."
-
-No login. No friction. Scannable in under 60 seconds.
-
----
-
-## Example Output
-
-```
-ALERT: Food shortage
-LOCATION: Barpeta, Assam
-LAST 6 HOURS: 47 mentions (↑ 520% vs baseline)
-NEED TYPE: Food
-
-SOURCES:
-1. @AssamTribune - "Heavy flooding, markets closed in Barpeta..."
-   twitter.com/... • 2 hours ago
-
-2. NDTV - "Assam floods: 50,000 affected as Brahmaputra rises"
-   ndtv.com/... • 4 hours ago
-
-3. r/india - "Any updates on relief camps in Barpeta district?"
-   reddit.com/... • 5 hours ago
+/backend
+  /app
+    /ingestion    → Platform-specific data scrapers (Twitter, Reddit, etc.)
+    /models       → Pydantic schemas and database models
+    /nlp          → NLP pipeline for classification and geo-extraction
+    /routers      → API endpoint definitions (/alerts, /events, /stats)
+    /services     → Signal aggregation and business logic
+    main.py       → Main entry point for the FastAPI application
+    config.py     → Environment configuration management
+/frontend         → Next.js dashboard and mapping interface
+/data             → Local data storage for research and static assets
+/docs             → Technical documentation and design logs
+BLUEPRINT.md      → Internal architecture reference and decision log
+LICENSE           → Proprietary license terms
 ```
 
 ---
 
-## Current Scope
+## Installation
 
-| Dimension | V1 Coverage |
-|-----------|-------------|
-| **Region** | India |
-| **Languages** | English (Hindi planned) |
-| **Crisis types** | Floods, cyclones, disease outbreaks, displacement |
-| **Sources** | X/Twitter, Reddit, GDELT, NewsAPI |
+### Prerequisites
+*   Python 3.11 or higher
+*   Node.js 18+
+*   PostgreSQL 14+
+*   API Keys: Twitter (X) Developer, Reddit API, NewsAPI
 
-Starting narrow is intentional. Expansion follows validation.
+### Backend Setup
+1.  **Clone the repository**:
+    ```bash
+    git clone https://github.com/CodedRichy/ReliefWatch.git
+    cd ReliefWatch/backend
+    ```
+2.  **Create a virtual environment**:
+    ```bash
+    python -m venv venv
+    source venv/bin/activate  # On Windows: venv\Scripts\activate
+    ```
+3.  **Install dependencies**:
+    ```bash
+    pip install -r requirements.txt
+    ```
+4.  **Configure Environment**:
+    ```bash
+    cp .env.example .env
+    # Edit .env with your database URL and API credentials
+    ```
+5.  **Initialize Database**:
+    ```bash
+    alembic upgrade head
+    ```
+
+### Frontend Setup
+1.  **Navigate to frontend**:
+    ```bash
+    cd ../frontend
+    ```
+2.  **Install dependencies**:
+    ```bash
+    npm install
+    ```
 
 ---
 
-## Who This Is For
+## Usage
 
-**Crisis analysts and OSINT researchers**
-- Early signals before official reports
-- Transparent methodology
+### Running Locally
+*   **Start the Backend**:
+    ```bash
+    uvicorn app.main:app --reload
+    ```
+*   **Start the Frontend**:
+    ```bash
+    npm run dev
+    ```
 
-**Journalists**
-- Fast situational awareness
-- Quotable, shareable outputs
-
-**NGOs and disaster responders**
-- Informal reference during active events
-- No vendor lock-in
-
----
-
-## Who This Is NOT For
-
-- General public seeking news (use news sites)
-- Automated decision-making (requires human judgment)
-- Legal documentation (signals are unverified)
-- Tactical response (latency too high)
+### API Interaction
+Once the backend is running, you can access the interactive API documentation at:
+*   **Swagger UI**: `http://localhost:8000/docs`
+*   **ReDoc**: `http://localhost:8000/redoc`
 
 ---
 
-## Known Limitations
+## Configuration
 
-**Signals, not facts**
-- Social media contains rumors and misinformation
-- No ground verification
-- Confidence reflects volume and recency, not truth
+The application is configured primarily through environment variables in `backend/.env`. Key variables include:
 
-**Coverage gaps**
-- Internet blackouts create blind spots
-- Populations without internet access are invisible
-- Urban/English bias
+*   `DATABASE_URL`: PostgreSQL connection string.
+*   `TWITTER_BEARER_TOKEN`: For X/Twitter ingestion.
+*   `REDDIT_CLIENT_ID / SECRET`: For Reddit ingestion.
+*   `NEWS_API_KEY`: For NewsAPI data.
 
-**Technical constraints**
-- Platform API changes may disrupt access
-- Location extraction relies on text mentions
-- Classification is keyword-based (V1)
+---
 
-Users should treat outputs as leads for investigation, not confirmed reports.
+## Development
+
+*   **Architecture First**: Always consult `BLUEPRINT.md` before making structural changes.
+*   **Linting**: Use `black` for Python formatting and `eslint` for frontend code.
+*   **Pydantic**: All data validation should be handled via Pydantic models in `backend/app/models`.
+
+---
+
+## Testing
+
+ReliefWatch uses `pytest` for backend unit and integration tests.
+
+To run tests:
+```bash
+cd backend
+pytest
+```
+
+*(Note: Currently implementing comprehensive test coverage for NLP modules.)*
+
+---
+
+## Deployment
+
+The project is designed for cloud-native deployment:
+
+*   **Production API**: Railway (or any Docker-compliant host).
+*   **Production Frontend**: Vercel.
+*   **Database**: Managed PostgreSQL (Railway/RDS).
+
+---
+
+## Roadmap
+
+*   [ ] **Database Schema Completion**: Finalize SQLAlchemy models for all signal types.
+*   [ ] **ML Classification (V2)**: Move beyond keyword matching to Transformer-based classification.
+*   [ ] **India-Wide Scale**: Expand location extraction to support all Indian states.
+*   [ ] **Multilingual Support**: Implement Hindi language signal processing.
+*   [ ] **Public Dashboard**: Release the first version of the Next.js frontend map.
+
+---
+
+## Contributing
+
+This project is currently **Proprietary**. While the source code is visible, contributions are restricted to invited collaborators. If you are interested in the project, please reach out to the repository owner.
 
 ---
 
 ## License
 
-**Proprietary.** This repository is visible for reference only. No license is granted to use, copy, modify, or distribute this software. See [LICENSE](LICENSE) for details.
+**Proprietary.** Copyright (c) 2025 Rishi Praseeth Krishnan. All rights reserved.
 
----
-
-## Project Status
-
-**Status:** Active Development  
-**Version:** Pre-release
-
----
-
-<sub>Copyright 2025 Rishi Praseeth Krishnan. All rights reserved.</sub>
+Visible for reference only. No license is granted to use, copy, modify, or distribute this software without express written permission. See the [LICENSE](LICENSE) file for the full legal text.
