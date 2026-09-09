@@ -2,36 +2,36 @@
 
 ## Overview
 
-ReliefWatch is a public humanitarian early-warning system designed to scan open-source signals—social media and news—during disasters. Its primary goal is to answer the core question: **"What kind of help is being urgently talked about, where, and how recently?"**
+ReliefWatch is a public humanitarian early-warning system. It scans open-source signals during disasters, meaning social media and news. The question it answers is what kind of help is being urgently talked about, where, and how recently.
 
-By surfacing signals earlier than formal reporting systems, ReliefWatch provides crisis analysts and first responders with high-velocity situational awareness, helping them identify urgent needs for food, medical aid, shelter, and displacement alerts before official data is compiled.
+Signals surface here earlier than they do in formal reporting systems. That gives crisis analysts and first responders situational awareness at speed, so they can identify urgent needs for food, medical aid, shelter, and displacement alerts before official data is compiled.
 
 ---
 
 ## Features
 
-*   **Multimodal Data Ingestion**: Continuous scanning of X (Twitter), Reddit, GDELT, and global news feeds using disaster-specific keywords.
-*   **Rapid Signal Classification**: Automated tagging of signals into categories such as Food, Medical, Shelter, Displacement, and Infrastructure.
-*   **Geospatial Extraction**: Identifying specific locations (cities, districts, states) from unstructured text to map needs accurately.
-*   **Signal Aggregation**: Grouping similar mentions and calculating volume and velocity to detect emergent spikes in humanitarian needs.
-*   **Public Accountability**: A transparent platform showing source links, timestamps, and cross-source agreement for every alert.
+*   **Multimodal Data Ingestion**: Continuous scanning of X (Twitter), Reddit, GDELT, and global news feeds. The keywords are disaster-specific.
+*   **Rapid Signal Classification**: Automated tagging of signals into Food, Medical, Shelter, Displacement, and Infrastructure.
+*   **Geospatial Extraction**: Locations are pulled out of unstructured text so needs can be mapped accurately. Cities, districts, states.
+*   **Signal Aggregation**: Similar mentions are grouped, then counted for volume and velocity. Spikes in humanitarian need show up as they emerge.
+*   **Public Accountability**: Every alert carries its source links, timestamps, and cross-source agreement.
 
 ---
 
 ## Architecture
 
-ReliefWatch follows a modern decoupled architecture:
+The architecture is decoupled:
 
-*   **Frontend**: A Next.js application providing a scannable dashboard with interactive maps (Leaflet) and ranked alert lists.
-*   **API Engine**: A high-performance FastAPI backend that processes signals and serves crisis data via structured endpoints.
-*   **Ingestion Workers**: Background workers that interact with various social and news APIs to pull real-time data.
-*   **Data Store**: A PostgreSQL database managing the lifecycle of signals, aggregated events, and geographical metadata.
+*   **Frontend**: A Next.js dashboard with interactive maps (Leaflet) and ranked alert lists. It is built to be scanned quickly.
+*   **API Engine**: A FastAPI backend. It processes signals and serves crisis data through structured endpoints.
+*   **Ingestion Workers**: Background workers that call the social and news APIs for real-time data.
+*   **Data Store**: A PostgreSQL database holding signals, aggregated events, and geographical metadata through their lifecycle.
 
 ### Data Flow
-1.  **Ingestion**: Scrapers pull raw text from public platforms based on keyword triggers.
+1.  **Ingestion**: Scrapers pull raw text from public platforms when a keyword triggers.
 2.  **Processing**: NLP modules classify the "Need Type" and extract location coordinates.
-3.  **Aggregation**: Individual signals are clustered into "Events" based on proximity and timing.
-4.  **Delivery**: The API serves these events to the frontend for public visualization.
+3.  **Aggregation**: Individual signals cluster into "Events" by proximity and timing.
+4.  **Delivery**: The API serves those events to the frontend for public display.
 
 ---
 
@@ -125,7 +125,7 @@ LICENSE           → Proprietary license terms
     ```
 
 ### API Interaction
-Once the backend is running, you can access the interactive API documentation at:
+With the backend running, the interactive API documentation is at:
 *   **Swagger UI**: `http://localhost:8000/docs`
 *   **ReDoc**: `http://localhost:8000/redoc`
 
@@ -133,7 +133,7 @@ Once the backend is running, you can access the interactive API documentation at
 
 ## Configuration
 
-The application is configured primarily through environment variables in `backend/.env`. Key variables include:
+Configuration lives in environment variables in `backend/.env`. The key ones:
 
 *   `DATABASE_URL`: PostgreSQL connection string.
 *   `TWITTER_BEARER_TOKEN`: For X/Twitter ingestion.
@@ -144,9 +144,9 @@ The application is configured primarily through environment variables in `backen
 
 ## Development
 
-*   **Architecture First**: Always consult `BLUEPRINT.md` before making structural changes.
-*   **Linting**: Use `black` for Python formatting and `eslint` for frontend code.
-*   **Pydantic**: All data validation should be handled via Pydantic models in `backend/app/models`.
+*   **Architecture First**: Read `BLUEPRINT.md` before making structural changes.
+*   **Linting**: `black` for Python formatting, `eslint` for frontend code.
+*   **Pydantic**: Data validation goes through the Pydantic models in `backend/app/models`.
 
 ---
 
@@ -166,7 +166,7 @@ pytest
 
 ## Deployment
 
-The project is designed for cloud-native deployment:
+The project is built for cloud-native deployment:
 
 *   **Production API**: Railway (or any Docker-compliant host).
 *   **Production Frontend**: Vercel.
@@ -186,7 +186,7 @@ The project is designed for cloud-native deployment:
 
 ## Contributing
 
-This project is currently **Proprietary**. While the source code is visible, contributions are restricted to invited collaborators. If you are interested in the project, please reach out to the repository owner.
+This project is proprietary. The source code is visible, and contributions are restricted to invited collaborators. If the project interests you, reach out to the repository owner.
 
 ---
 
